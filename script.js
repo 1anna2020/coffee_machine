@@ -8,6 +8,8 @@ let coffeeCup = document.querySelector(".coffee-cup img");
 
 let coffeeStatus = "waiting"; //"cooking" "ready"
 
+coffeeCup.onclick = takeCoffee;// три варианта, это первый) 
+
 function buyCoffee(name, cost, elem) {
    if (coffeeStatus != "waiting") {
     return;
@@ -37,7 +39,7 @@ function cookCoffee(name, elem) {
 
   let readyPercent = 0;
   let cookingInterval = setInterval(() => {
-    readyPercent++
+    readyPercent++;
     progressBar.style.width = readyPercent + "%";
     coffeeCup.style.opacity = readyPercent + "%";
     if (readyPercent == 100) {
@@ -48,9 +50,21 @@ function cookCoffee(name, elem) {
     }
   }, 100);
 }
+function takeCoffee() {
+  if (coffeeStatus != "ready") {
+    return;
+  }
+  coffeeStatus = "waiting";
+  coffeeCup.classList.add("d-none");
+  coffeeCup.style.cursor ="auto";
+  progressBar.style.width = "0%";
+  changeDisplayText("Выберите кофе");
+
+}
 
 function changeDisplayText(text) {
   displayText.innerHTML = "<span>"+text+"</span>";
+  
 }
   
   
