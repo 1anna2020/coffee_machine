@@ -80,7 +80,7 @@ function changeDisplayText(text) {
       event.preventDefault();
       
       let bill = this;
-      let billCost = bill.getAttribute("cost");
+      //let billCost = bill.getAttribute("cost");
       //console.log (billCost);
       
       bill.style.position = "absolute";
@@ -106,7 +106,173 @@ function changeDisplayText(text) {
   
     function dropMoney() {
       window.onmousemove = null;
+      
+      let bill = this;
+      let billCost = bill.getAttribute("cost");
+      
+      if (inAtm(bill)) {
+      balance.value = +balance.value + +billCost
+      bill.remove();
+      }
     }
+
+ function inAtm(bill) {
+  
+  let billCoord = bill.getBoundingClientRect();
+  let atm = document.querySelector(".atm");
+  let atmCoord = atm.getBoundingClientRect();
+  
+  let billLeftTopCornerX=billCoord.x
+  let billLeftTopCornerY = billCoord.y
+  
+  let billRightTopCornerX = billCoord.x + billCoord.width;
+  let billRightTopCornerY = billCoord.y
+  
+  let atmLeftTopCornerX = atmCoord.x;
+  let atmLeftTopCornerY = atmCoord.y;
+  
+  let atmRightTopCornerX = atmCoord.x + atmCoord.width;
+  let atmRightTopCornerY = atmCoord.y;
+  
+  let atmLeftBottomCornerX = atmCoord.x;
+  let atmLeftBottomCornerY = atmCoord.y + atmCoord.height/3;
+  
+  let atmRightBottomCornerX = atmCoord.x + atmCoord.width;
+  let atmRightBottomCornerY = atmCoord.y + atmCoord.height/3;
+  
+  if(
+    billLeftTopCornerX >= atmLeftTopCornerX
+    && billLeftTopCornerY >= atmLeftTopCornerY
+    && billRightTopCornerX <= atmRightTopCornerX
+    && billRightTopCornerY >= atmRightTopCornerY
+    
+    && billLeftTopCornerX >= atmLeftBottomCornerX
+    && billLeftTopCornerY <= atmLeftBottomCornerY
+    
+    
+    ){
+      return true;
+    } else {
+      return false;
+    }
+  
+  
+  // console.log([billCoord, atmCoord]);
+  console.log(
+    [
+      [billLeftTopCornerX, billLeftTopCornerY] , [billRightTopCornerX, billRightTopCornerY]
+ ],
+ [
+   [atmLeftTopCornerX, atmLeftTopCornerY] ,
+   [atmRightTopCornerX, atmRightTopCornerY],
+   [atmLeftBottomCornerX, atmLeftBottomCornerY], 
+   [atmRightBottomCornerX, atmRightBottomCornerY]
+   ]
+   );
+}
+
+// ----------------Сдача-------------------
+
+let changeBtn = document.querySelector(".change");
+changeBtn.onclick = takeChange;
+
+
+function takeChange() {
+  //alert("Сдача!");
+  //tossCoin("10");
+  if (balance.value <=0) {
+    changeBtn.onclick = takeChange;
+    return;
+  }
+  
+  changeBtn.onclick = null;
+  if (balance.value - 10 > 0) {
+    setTimeout(() => {
+    tossCoin("10");
+    balance.value -= 10;
+    return takeChange();
+ }, 300)
+} else if (balance.value - 5 >= 0) {
+  setTimeout(() => {
+  tossCoin("5");
+  balance.value -= 5;
+  return takeChange();
+ }, 300)
+} else if (balance.value - 2 >= 0) {
+  setTimeout(() => {
+  tossCoin("2");
+  balance.value -= 2;
+   return takeChange();
+ }, 300)
+} else if (balance.value - 1 >= 0) {
+  setTimeout(() => {
+  tossCoin("1");
+  balance.value -= 1;
+  return takeChange();
+  }, 300)
+ }
+}
+
+function tossCoin(cost) {
+  let changeContainer = document.querySelector(".change-box");
+  let changeContainerCoords = changeContainer.getBoundingClientRect();
+ // console.log(changeContainerCoords);
+ let coinSrc = "";
+  
+  switch (cost) {
+    case "10":
+    coinSrc = "img/10rub.png";
+      break;
+    case "5":
+    coinSrc = "img/5rub.png";
+      break;
+    case "2":
+    coinSrc = "img/2rub.png";
+      break;
+    case "1":
+    coinSrc = "img/1rub.png";
+       break;
+  }
+  
+  // как вариант можно добавить иннерХТМЛ, чтобы получить на странице картинку, но это старый способ, его использую в связке ХТМЛ ПХП
+ /* changeContainer.innerHTML += ` 
+    <img src="${coinSrc}" style="height: 50px"> 
+    `*/
+  let coin = document.createElement("img");
+  coin.setAttribute("src", coinSrc);
+  coin.style.height = "50px";
+  coin.style.width = "50px";
+  coin.style.cursor = "pointer";
+  coin.style.display = "inline-block";
+  coin.style.position = "absolute";
+  coin.style.userSelect = "none";
+  
+  changeContainer.append(coin); // прикрепить после всех элементов внутри элемента
+  /*changeContainer.prepend(coin); // прикрепить после всех элементов внутри элемента
+  
+  changeContainer.after(coin); // После контейнера
+  changeContainer.before(coin); //Перед контейнером
+  
+  changeContainer.replace(coin); //Заменяет элементы
+ */
+ 
+ //console.log(coinSrc);
+  
+ coin.style.top = Math.round(Math.random() * (changeContainerCoords.height - 53)) + "px";
+ coin.style.left = Math.round(Math.random() * (changeContainerCoords.width - 53)) + "px";
+  
+  coin.onclick = () => coin.remove();
+  coin.onclick = () => coin.remove();
+  
+    let coinSound = new Audio("sound/coindrops.mp3");
+    //coinSound.src = sound/coins.mp3
+    coinSound.play();
+  
+}
+
+
+
+
 
 
 
